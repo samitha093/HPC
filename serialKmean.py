@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 import time
+import warnings
 
 # Define the number of clusters
 n_clusters = 3
@@ -12,9 +13,11 @@ data = np.loadtxt('generated_data.csv', delimiter=',')
 # Start measuring time
 start_time = time.time()
 
-# Apply K-means clustering
-kmeans = KMeans(n_clusters=n_clusters)
-kmeans.fit(data)
+# Apply K-means clustering with n_init set explicitly
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore", category=FutureWarning)
+    kmeans = KMeans(n_clusters=n_clusters, n_init=10)
+    kmeans.fit(data)
 labels = kmeans.labels_
 centroids = kmeans.cluster_centers_
 
@@ -31,4 +34,10 @@ plt.scatter(centroids[:, 0], centroids[:, 1], c='red', marker='X', s=200)
 plt.xlabel('Feature 1')
 plt.ylabel('Feature 2')
 plt.title('K-means Clustering')
-plt.show()
+
+# Save the figure to a file
+figure_filename = 'kmeans_clusters.png'
+plt.savefig(figure_filename)
+
+# Print a message
+print(f"Figure saved as {figure_filename}")
