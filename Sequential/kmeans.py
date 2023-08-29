@@ -31,10 +31,9 @@ def comparison_plot(X, c1, l1, c2, l2):
 
 
 class BaseModel(ABC):
-    
     def __init__(self) -> None:
         super().__init__()
-    
+
     @abstractmethod
     def fit(self, X, y):
         pass
@@ -42,17 +41,17 @@ class BaseModel(ABC):
     @abstractmethod
     def predict(self, X):
         pass
-    
-    
+
 class KMeans(BaseModel):
-    
     def __init__(self, n_clusters, max_iter, file_prefix=None) -> None:
+        # Initialize KMeans parameters
         self._n_clusters = n_clusters
         self._max_iter = max_iter
         self._centroids = None
         self._labels = None
         self._file_prefix = file_prefix
         self._init_centroids = None
+        
         # Create the kmeans_plots folder if it doesn't exist
         input_path = "kmeans_plots"
         if not os.path.exists(input_path):
@@ -71,23 +70,26 @@ class KMeans(BaseModel):
         return self._init_centroids
     
     def _initialize_centroids(self, K, X):
+        # Randomly select initial centroids
         centroid_indices = np.random.choice(len(X), K, replace=False)
         centroids = X[centroid_indices.tolist()]
         self._init_centroids = centroids
         return centroids
     
     def _calculate_euclidean_distance(self, centroids, X):
-        # return distance per each centroid
+        # Calculate Euclidean distances between data points and centroids
         distances = np.linalg.norm(X[:, None] - centroids, axis=2)
         return distances
     
     def _assign_labels(self, distances):
+        # Assign each data point to the nearest centroid
         return np.argmin(distances, axis=1)
     
     def _update_centroids(self, X, n_clusters, labels):
+        # Update centroids by calculating the mean of data points in each cluster
         new_centroids = []
         for i in range(n_clusters):
-            new_centroids.append(np.mean(X[labels==i], axis=0)) # take average row wise (or per data point)
+            new_centroids.append(np.mean(X[labels==i], axis=0))
         return np.array(new_centroids)    
         
     def fit(self, X, y=None):
@@ -100,15 +102,16 @@ class KMeans(BaseModel):
         
             centroids = self._update_centroids(X, self._n_clusters, labels)
             
+            # If file_prefix is provided, create plots at each iteration
             if self._file_prefix:
                 plot(X, centroids, labels, False, i, self._file_prefix)
 
         self._centroids = centroids
         self._labels = labels
-
     
     def predict(self, X):
         return NotImplemented("Not implemented")
+
 
 
 
