@@ -5,13 +5,13 @@ from kmeans import KMeans, plot, comparison_plot  # Import required classes and 
 np.random.seed(123)
 
 # Generate random data
-N = 10000
-M = 2
+N = 10000 #data points
+M = 2 #features
 X = np.random.rand(N, M)
 
 # Define parameters for KMeans
-K = 3
-max_iter = 30
+K = 3 #number of clusters
+max_iter = 30 #maximum number of iterations
 
 # Create a KMeans instance and fit it to the data
 kmeans = KMeans(n_clusters=K, max_iter=max_iter, file_prefix="kmeans_plots/kmeans_clustering")
@@ -28,4 +28,4 @@ output_file = "kmeans_clustering_animate.gif"
 duration = 1000  # Duration between frames in milliseconds
 
 # Generate the GIF animation
-generate_gif(path=input_path, file_prefix=file_prefix, output_path=output_path, output_file=output_file, duration=duration)
+generate_gif(path=input_path, file_prefix=file_prefix, output_path=output_path, output_file=output_file, duration=duration) 
