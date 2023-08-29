@@ -1,5 +1,6 @@
 import numpy as np
 from kmeans import KMeans
+from mpi4py import MPI
 
 # Set random seed for reproducibility
 np.random.seed(123)
@@ -13,8 +14,13 @@ X = np.random.rand(N, M)
 K = 3 #number of clusters
 max_iter = 30 #maximum number of iterations
 
+# Initialize MPI
+comm = MPI.COMM_WORLD
+rank = comm.Get_rank()
+size = comm.Get_size()
+
 # Create a KMeans instance and fit it to the data
-kmeans = KMeans(n_clusters=K, max_iter=max_iter, file_prefix="kmeans_plots/kmeans_clustering")
+kmeans = KMeans(n_clusters=K, max_iter=max_iter, comm=comm, file_prefix="kmeans_plots/kmeans_clustering")
 kmeans.fit(X)
 
 # Generate a GIF animation of the clustering process

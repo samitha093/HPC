@@ -18,17 +18,6 @@ def plot(X, centroids, labels, show=True, iteration=None, file_name=None):
         plt.savefig(file_name)
     plt.close()
 
-def comparison_plot(X, c1, l1, c2, l2):
-    # Plot the original data and clusters
-    plt.scatter(X[:, 0], X[:, 1], c=l1, cmap='viridis')
-    plt.scatter(X[:, 0], X[:, 1], c=l2, cmap='viridis')
-    plt.scatter(c1[:, 0], c1[:, 1], c='red', marker='x', s=100)
-    plt.scatter(c2[:, 0], c2[:, 1], c='orange', marker='*', s=100)
-    plt.title('K-means Clustering')
-    plt.xlabel('X')
-    plt.ylabel('Y')
-    plt.show()
-
 
 class BaseModel(ABC):
     def __init__(self) -> None:

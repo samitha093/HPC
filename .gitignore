@@ -4,3 +4,5 @@ Sequential/kmeans_plots/
 Sequential/_pycache_/
 *.pyc
 *.csv
+*.png
+*.gif
