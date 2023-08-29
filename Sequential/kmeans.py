@@ -1,7 +1,9 @@
 import os
+import time
 import numpy as np
 import matplotlib.pyplot as plt
 from abc import ABC, abstractmethod
+from gen import genarateData
 
 
 def plot(X, centroids, labels, show=True, iteration=None, file_name=None):
@@ -40,6 +42,7 @@ class KMeans(BaseModel):
         self._labels = None
         self._file_prefix = file_prefix
         self._init_centroids = None
+        self.spend_time = 0
         
         # Create the kmeans_plots folder if it doesn't exist
         input_path = "kmeans_plots"
@@ -81,19 +84,37 @@ class KMeans(BaseModel):
             new_centroids.append(np.mean(X[labels==i], axis=0))
         return np.array(new_centroids)    
         
-    def fit(self, X, y=None):
+    def fit(self, data, DatasetSize ,plot_graph = False ,y=None):
+
+        start_time = time.time()
+        # Load data from CSV file
+        try:
+            X = np.loadtxt(data, delimiter=',')
+        except
+            genarateData(DatasetSize)
+            X = np.loadtxt(data, delimiter=',')
+
+        end_time = time.time()
+
+        elapsed_time = end_time - start_time
+        print("Reading data from CSV file took %f seconds" % elapsed_time)
+
         centroids = self._initialize_centroids(self._n_clusters, X)
         labels = None
         for i in range(self._max_iter):
+            startR_time = time.time()
             distances = self._calculate_euclidean_distance(centroids, X)
 
             labels = self._assign_labels(distances)
         
             centroids = self._update_centroids(X, self._n_clusters, labels)
-            
-            # If file_prefix is provided, create plots at each iteration
-            if self._file_prefix:
-                plot(X, centroids, labels, False, i, self._file_prefix)
+            endR_time = time.time()
+            self.spend_time += endR_time - startR_time
+
+            if plot_graph and self._file_prefix:
+                    plot(X, centroids, labels, False, i, self._file_prefix)
+        
+        print("Calculating KMeans took %f seconds" % self.spend_time)
 
         self._centroids = centroids
         self._labels = labels

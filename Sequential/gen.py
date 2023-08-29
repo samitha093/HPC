@@ -1,6 +1,6 @@
 import numpy as np
 
-def genarateData(size=10000, features=2):
+def genarateData(size, features=2):
     # Set random seed for reproducibility
     np.random.seed(123)
 
@@ -9,5 +9,3 @@ def genarateData(size=10000, features=2):
 
     # Save data to CSV file
     np.savetxt('data.csv', X, delimiter=',')
-
-# genarateData()

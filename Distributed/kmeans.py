@@ -1,4 +1,5 @@
 import os
+import time
 import numpy as np
 import matplotlib.pyplot as plt
 from abc import ABC
@@ -46,12 +47,18 @@ class KMeans(BaseModel):
         self._comm = comm
         self._rank = comm.Get_rank()
         self._size = comm.Get_size()
+        self.spend_time = 0
 
-        # Create the kmeans_plots folder if it doesn't exist
-        input_path = "kmeans_plots"
-        if not os.path.exists(input_path):
-            os.makedirs(input_path)
-        
+        if self._rank == 0:
+            # Create the kmeans_plots folder if it doesn't exist
+            input_path = "kmeans_plots"
+            if not os.path.exists(input_path):
+                os.makedirs(input_path)
+            # Create the images folder if it doesn't exist
+            output_path = "images"
+            if not os.path.exists(output_path):
+                os.makedirs(output_path)
+            
     @property
     def lables(self):
         return self._labels
@@ -131,7 +138,7 @@ class KMeans(BaseModel):
             new_centroids.append(new_centroid) 
         return np.array(new_centroids)    
         
-    def fit(self, data, y=None) -> None:
+    def fit(self, data, DatasetSize ,plot_graph = False ,y=None) -> None:
         """
         Training the KMeans algorithm
 
@@ -139,35 +146,53 @@ class KMeans(BaseModel):
             X (String): data file path
             y : Ignored but placed as a convention.
         """
-        # load data
+        # Data to scatter init
+        data_size = DatasetSize // self._size
+        index_start = self._rank * data_size
+        if index_start != 0:
+            index_start += 1
+            
+        startR_time = time.time()
+        # Read rows from data.csv
         try:
-            X = np.loadtxt(data, delimiter=',')
+            x_local = np.genfromtxt(data, delimiter=',', skip_header=index_start, max_rows=data_size)
         except:
-            genarateData()
+            genarateData(DatasetSize)
+            x_local = np.genfromtxt(data, delimiter=',', skip_header=index_start, max_rows=data_size)
+        endR_time = time.time()
+
+        # calculate time to read data
+        elapsedR_time = endR_time - startR_time
+        print(f"Process {self._rank}: Reading data took {elapsedR_time:.4f} seconds")
 
         # initialize centroids
-        centroids = self._initialize_centroids(self._n_clusters, X)
+        centroids = self._initialize_centroids(self._n_clusters, x_local)
         
-        # scatter data
-        x_local = np.empty((X.shape[0]//self._size, X.shape[1]), dtype=X.dtype)
-        self._comm.Scatter(X, x_local, root=0)
+        # calculation data loop
         labels = None
         for i in range(self._max_iter):
+
+            start_time = time.time()
+
             distances = self._calculate_euclidean_distance(centroids, x_local)
 
             labels = self._assign_labels(distances)
         
             centroids = self._update_centroids(x_local, self._n_clusters, labels)
 
-            # If file_prefix is provided, create plots at each iteration
-            if self._file_prefix:
-                plot(X, centroids, labels, False, i, self._file_prefix)
+            end_time = time.time()
+            self.spend_time += end_time - start_time
+
+            if plot_graph and self._rank == 0 and self._file_prefix:
+                        plot(x_local, centroids, labels, False, i, self._file_prefix)
+        
+        print(f"Process {self._rank}: Calculation took {self.spend_time:.4f} seconds")
 
         self._centroids = centroids
         self._labels = labels
     
     def predict(self, X: np.array) -> np.array:
         return NotImplemented("Not implemented")
-
+    
 
 
