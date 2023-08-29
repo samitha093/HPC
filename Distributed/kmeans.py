@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from abc import ABC
 from abc import abstractmethod
 from mpi4py import MPI
+from gen import genarateData
 
 def plot(X, centroids, labels, show=True, iteration=None, file_name=None):
     # Plot the original data and clusters
@@ -139,7 +140,10 @@ class KMeans(BaseModel):
             y : Ignored but placed as a convention.
         """
         # load data
-        X = np.loadtxt('data.csv', delimiter=',')
+        try:
+            X = np.loadtxt(data, delimiter=',')
+        except:
+            genarateData()
 
         # initialize centroids
         centroids = self._initialize_centroids(self._n_clusters, X)
