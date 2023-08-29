@@ -2,13 +2,8 @@ import numpy as np
 from kmeans import KMeans
 from mpi4py import MPI
 
-# Set random seed for reproducibility
-np.random.seed(123)
-
-# Generate random data
-N = 10000 #data points
-M = 2 #features
-X = np.random.rand(N, M)
+# Load data from CSV file
+DataFile = "data.csv"
 
 # Define parameters for KMeans
 K = 3 #number of clusters
@@ -21,7 +16,7 @@ size = comm.Get_size()
 
 # Create a KMeans instance and fit it to the data
 kmeans = KMeans(n_clusters=K, max_iter=max_iter, comm=comm, file_prefix="kmeans_plots/kmeans_clustering")
-kmeans.fit(X)
+kmeans.fit(DataFile)
 
 # Generate a GIF animation of the clustering process
 from util import generate_gif

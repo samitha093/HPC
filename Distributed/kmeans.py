@@ -130,14 +130,17 @@ class KMeans(BaseModel):
             new_centroids.append(new_centroid) 
         return np.array(new_centroids)    
         
-    def fit(self, X: np.array, y=None) -> None:
+    def fit(self, data, y=None) -> None:
         """
         Training the KMeans algorithm
 
         Args:
-            X (np.array): data
+            X (String): data file path
             y : Ignored but placed as a convention.
         """
+        # load data
+        X = np.loadtxt('data.csv', delimiter=',')
+
         # initialize centroids
         centroids = self._initialize_centroids(self._n_clusters, X)
         
