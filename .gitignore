@@ -1,0 +1,6 @@
+
+Sequential/images/
+Sequential/kmeans_plots/
+Sequential/_pycache_/
+*.pyc
+*.csv
