@@ -169,6 +169,7 @@ class KMeans(BaseModel):
 
         # calculate time to read data
         self.spend_read_time = endR_time - startR_time
+        print(f"Process {self._rank}: Reading data took {self.spend_read_time:.4f} seconds")
 
         start_time = time.time()
         # initialize centroids
@@ -190,7 +191,6 @@ class KMeans(BaseModel):
         end_time = time.time()
         self.spend_time += end_time - start_time
                         
-        print(f"Process {self._rank}: Reading data took {self.spend_read_time:.4f} seconds")
         print(f"Process {self._rank}: Calculation took {self.spend_time - self.spend_com_time:.4f} seconds")
         print(f"Process {self._rank}: Communication took {self.spend_com_time:.4f} seconds")
 
