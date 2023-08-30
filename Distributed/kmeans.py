@@ -184,8 +184,20 @@ class KMeans(BaseModel):
         elapsed_time = end_time - start_time
         self.spend_time = elapsed_time
 
+        print(f"Process {self._rank}: Calculation took {self.spend_time - self.spend_com_time:.4f} seconds")
+        print(f"Process {self._rank}: Communication took {self.spend_com_time:.4f} seconds")
+
         self._centroids = centroids
         self._labels = labels
+
+        final_spend_read_time = self._comm.allreduce(self.spend_read_time, op=MPI.MAX)
+        final_spend_com_time = self._comm.allreduce(self.spend_com_time, op=MPI.MAX)
+        final_spend_calc_time = self._comm.allreduce(self.spend_time - self.spend_com_time, op=MPI.MAX)
+
+        if self._rank == 0:
+            print(f"\033[1;32mData loader took {final_spend_read_time:.4f} seconds\033[0m")
+            print(f"\033[1;33mCommunication took {final_spend_com_time:.4f} seconds\033[0m")
+            print(f"\033[1;31mCalculation took {final_spend_calc_time:.4f} seconds\033[0m")
 
     
     def predict(self, X: np.array) -> np.array:
