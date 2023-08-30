@@ -169,7 +169,6 @@ class KMeans(BaseModel):
 
         # calculate time to read data
         self.spend_read_time = endR_time - startR_time
-        print(f"Process {self._rank}: Reading data took {self.spend_read_time:.4f} seconds")
 
         # initialize centroids
         centroids = self._initialize_centroids(self._n_clusters, x_local)
@@ -191,7 +190,8 @@ class KMeans(BaseModel):
 
             if plot_graph and self._rank == 0 and self._file_prefix:
                         plot(x_local, centroids, labels, False, i, self._file_prefix)
-        
+                        
+        print(f"Process {self._rank}: Reading data took {self.spend_read_time:.4f} seconds")
         print(f"Process {self._rank}: Calculation took {self.spend_time - self.spend_com_time:.4f} seconds")
         print(f"Process {self._rank}: Communication took {self.spend_com_time:.4f} seconds")
 
