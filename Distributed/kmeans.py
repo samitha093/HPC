@@ -184,6 +184,7 @@ class KMeans(BaseModel):
         elapsed_time = end_time - start_time
         self.spend_time = elapsed_time
 
+        print(f"Process {self._rank}: Reading data took {self.spend_read_time:.4f} seconds")
         print(f"Process {self._rank}: Calculation took {self.spend_time - self.spend_com_time:.4f} seconds")
         print(f"Process {self._rank}: Communication took {self.spend_com_time:.4f} seconds")
 
