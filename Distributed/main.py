@@ -4,7 +4,7 @@ from mpi4py import MPI
 
 # Load data from CSV file
 DataFile = "data.csv"
-DataSetSize = 1*1000000 #1 million data points
+DataSetSize = 5*1000000 #5 million data points
 
 # Define parameters for KMeans
 K = 3 #number of clusters
