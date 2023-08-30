@@ -150,14 +150,15 @@ class KMeans(BaseModel):
         # load data
         start_read_time = time.time()
         try:
-            X = np.loadtxt(data, delimiter=',')
+            X = np.genfromtxt(data, delimiter=',')
         except:
             genarateData(DatasetSize)
             start_read_time = time.time()
-            X = np.loadtxt(data, delimiter=',')
+            X = np.genfromtxt(data, delimiter=',')
         end_read_time = time.time()
         elapsed_read_time = end_read_time - start_read_time
         self.spend_read_time = elapsed_read_time
+        print(f"Process {self._rank}: Data loader took {elapsed_read_time:.4f} seconds")
 
         start_time = time.time()
         # initialize centroids
@@ -188,7 +189,6 @@ class KMeans(BaseModel):
         elapsed_time = end_time - start_time
         self.spend_time = elapsed_time
 
-        print(f"Process {self._rank}: Reading data took {self.spend_read_time:.4f} seconds")
         print(f"Process {self._rank}: Calculation took {self.spend_time - self.spend_com_time:.4f} seconds")
         print(f"Process {self._rank}: Communication took {self.spend_com_time:.4f} seconds")
 
