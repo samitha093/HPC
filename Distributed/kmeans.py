@@ -195,8 +195,8 @@ class KMeans(BaseModel):
         self._centroids = centroids
         self._labels = labels
 
-        final_spend_read_time = self._comm.allreduce(self.spend_read_time, op=MPI.MAX)
-        final_spend_com_time = self._comm.allreduce(self.spend_com_time, op=MPI.MIN)
+        final_spend_read_time = self._comm.allreduce(self.spend_read_time, op=MPI.MIN)
+        final_spend_com_time = self._comm.allreduce(self.spend_com_time, op=MPI.MAX)
         final_spend_calc_time = self._comm.allreduce(self.spend_time - self.spend_com_time, op=MPI.MAX)
 
         if self._rank == 0:
