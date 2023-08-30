@@ -90,7 +90,7 @@ class KMeans(BaseModel):
         # Load data from CSV file
         try:
             X = np.loadtxt(data, delimiter=',')
-        except
+        except:
             genarateData(DatasetSize)
             X = np.loadtxt(data, delimiter=',')
 

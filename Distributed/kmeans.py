@@ -48,6 +48,8 @@ class KMeans(BaseModel):
         self._rank = comm.Get_rank()
         self._size = comm.Get_size()
         self.spend_time = 0
+        self.spend_com_time = 0
+        self.spend_read_time = 0
 
         if self._rank == 0:
             # Create the kmeans_plots folder if it doesn't exist
@@ -131,8 +133,12 @@ class KMeans(BaseModel):
         for i in range(n_clusters):
             # local mean of the centroid belonging to cluster `i`
             local_centroid = np.mean(X[labels==i], axis=0) 
+            start_com_time = time.time()
             # global sum of local mean of the centroid belonging to cluster `i`
             new_centroid_imd = self._comm.allreduce(local_centroid, op=MPI.SUM)
+            end_com_time = time.time()
+            elapsed_com_time = end_com_time - start_com_time
+            self.spend_com_time += elapsed_com_time
             # mean value of the global sum taken by dividing with number of total processes
             new_centroid = new_centroid_imd / self._size
             new_centroids.append(new_centroid) 
@@ -162,8 +168,8 @@ class KMeans(BaseModel):
         endR_time = time.time()
 
         # calculate time to read data
-        elapsedR_time = endR_time - startR_time
-        print(f"Process {self._rank}: Reading data took {elapsedR_time:.4f} seconds")
+        self.spend_read_time = endR_time - startR_time
+        print(f"Process {self._rank}: Reading data took {self.spend_read_time:.4f} seconds")
 
         # initialize centroids
         centroids = self._initialize_centroids(self._n_clusters, x_local)
@@ -186,10 +192,22 @@ class KMeans(BaseModel):
             if plot_graph and self._rank == 0 and self._file_prefix:
                         plot(x_local, centroids, labels, False, i, self._file_prefix)
         
-        print(f"Process {self._rank}: Calculation took {self.spend_time:.4f} seconds")
+        print(f"Process {self._rank}: Calculation took {self.spend_time - self.spend_com_time:.4f} seconds")
+        print(f"Process {self._rank}: Communication took {self.spend_com_time:.4f} seconds")
 
         self._centroids = centroids
         self._labels = labels
+
+        final_spend_read_time = self._comm.allreduce(self.spend_read_time, op=MPI.MAX)
+        final_spend_com_time = self._comm.allreduce(self.spend_com_time, op=MPI.MAX)
+        final_spend_calc_time = self._comm.allreduce(self.spend_time - self.spend_com_time, op=MPI.MAX)
+
+        if self._rank == 0:
+            print(f"\033[1;32mData loader took {final_spend_read_time:.4f} seconds\033[0m")
+            print(f"\033[1;33mCommunication took {final_spend_com_time:.4f} seconds\033[0m")
+            print(f"\033[1;31mCalculation took {final_spend_calc_time:.4f} seconds\033[0m")
+
+
     
     def predict(self, X: np.array) -> np.array:
         return NotImplemented("Not implemented")
