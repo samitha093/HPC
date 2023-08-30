@@ -167,8 +167,10 @@ class KMeans(BaseModel):
         start_scatter_time = time.time()
         self._comm.Scatter(X, x_local, root=0)
         end_scatter_time = time.time()
-        elapsed_scatter_time = end_scatter_time - start_scatter_time
-        self.spend_com_time += elapsed_scatter_time
+        if self._rank == 0:
+            elapsed_scatter_time = end_scatter_time - start_scatter_time
+            print(f"Process {self._rank}: Scatter took {elapsed_scatter_time:.4f} seconds")
+            # self.spend_com_time += elapsed_scatter_time
         labels = None
         for i in range(self._max_iter):
             distances = self._calculate_euclidean_distance(centroids, x_local)
