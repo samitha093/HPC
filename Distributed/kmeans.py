@@ -153,6 +153,7 @@ class KMeans(BaseModel):
             X = np.loadtxt(data, delimiter=',')
         except:
             genarateData(DatasetSize)
+            start_read_time = time.time()
             X = np.loadtxt(data, delimiter=',')
         end_read_time = time.time()
         elapsed_read_time = end_read_time - start_read_time
@@ -169,8 +170,7 @@ class KMeans(BaseModel):
         end_scatter_time = time.time()
         if self._rank == 0:
             elapsed_scatter_time = end_scatter_time - start_scatter_time
-            print(f"Process {self._rank}: Scatter took {elapsed_scatter_time:.4f} seconds")
-            # self.spend_com_time += elapsed_scatter_time
+            self.spend_com_time += elapsed_scatter_time
         labels = None
         for i in range(self._max_iter):
             distances = self._calculate_euclidean_distance(centroids, x_local)
