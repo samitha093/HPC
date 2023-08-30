@@ -1,4 +1,5 @@
 import os
+import time
 import numpy as np
 import matplotlib.pyplot as plt
 from abc import ABC
@@ -127,12 +128,16 @@ class KMeans(BaseModel):
         for i in range(n_clusters):
             # local mean of the centroid belonging to cluster `i`
             local_centroid = np.mean(X[labels==i], axis=0) 
+            start_com_time = time.time()
             # global sum of local mean of the centroid belonging to cluster `i`
             new_centroid_imd = self._comm.allreduce(local_centroid, op=MPI.SUM)
+            end_com_time = time.time()
+            elapsed_com_time = end_com_time - start_com_time
+            self.spend_com_time += elapsed_com_time
             # mean value of the global sum taken by dividing with number of total processes
             new_centroid = new_centroid_imd / self._size
             new_centroids.append(new_centroid) 
-        return np.array(new_centroids)    
+        return np.array(new_centroids)     
         
     def fit(self, data, y=None) -> None:
         """
