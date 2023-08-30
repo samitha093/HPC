@@ -46,6 +46,9 @@ class KMeans(BaseModel):
         self._comm = comm
         self._rank = comm.Get_rank()
         self._size = comm.Get_size()
+        self.spend_time = 0
+        self.spend_com_time = 0
+        self.spend_read_time = 0
 
         # Create the kmeans_plots folder if it doesn't exist
         input_path = "kmeans_plots"
