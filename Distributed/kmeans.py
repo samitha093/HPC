@@ -180,8 +180,9 @@ class KMeans(BaseModel):
             centroids = self._update_centroids(x_local, self._n_clusters, labels)
 
             # If file_prefix is provided, create plots at each iteration
-            if self._file_prefix and plot_graph:
-                plot(X, centroids, labels, False, i, self._file_prefix)
+            if plot_graph and self._rank == 0 and self._file_prefix:
+                plot(x_local, centroids, labels, False, i, self._file_prefix)
+                
         end_time = time.time()
         elapsed_time = end_time - start_time
         self.spend_time = elapsed_time
