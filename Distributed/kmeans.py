@@ -139,7 +139,7 @@ class KMeans(BaseModel):
             new_centroids.append(new_centroid) 
         return np.array(new_centroids)     
         
-    def fit(self, data, y=None) -> None:
+    def fit(self, data, DatasetSize ,plot_graph = False ,y=None) -> None:
         """
         Training the KMeans algorithm
 
@@ -151,7 +151,8 @@ class KMeans(BaseModel):
         try:
             X = np.loadtxt(data, delimiter=',')
         except:
-            genarateData()
+            genarateData(DatasetSize)
+            X = np.loadtxt(data, delimiter=',')
 
         # initialize centroids
         centroids = self._initialize_centroids(self._n_clusters, X)
