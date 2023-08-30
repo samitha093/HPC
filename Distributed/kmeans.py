@@ -163,11 +163,12 @@ class KMeans(BaseModel):
         # initialize centroids
         centroids = self._initialize_centroids(self._n_clusters, X)
         
+        start_scatter_time = time.time()
         # scatter data
         x_local = np.empty((X.shape[0]//self._size, X.shape[1]), dtype=X.dtype)
-        start_scatter_time = time.time()
         self._comm.Scatter(X, x_local, root=0)
         end_scatter_time = time.time()
+        
         if self._rank == 0:
             elapsed_scatter_time = end_scatter_time - start_scatter_time
             self.spend_com_time += elapsed_scatter_time
