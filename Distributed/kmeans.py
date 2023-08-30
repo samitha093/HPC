@@ -148,18 +148,27 @@ class KMeans(BaseModel):
             y : Ignored but placed as a convention.
         """
         # load data
+        start_read_time = time.time()
         try:
             X = np.loadtxt(data, delimiter=',')
         except:
             genarateData(DatasetSize)
             X = np.loadtxt(data, delimiter=',')
+        end_read_time = time.time()
+        elapsed_read_time = end_read_time - start_read_time
+        self.spend_read_time = elapsed_read_time
 
+        start_time = time.time()
         # initialize centroids
         centroids = self._initialize_centroids(self._n_clusters, X)
         
         # scatter data
         x_local = np.empty((X.shape[0]//self._size, X.shape[1]), dtype=X.dtype)
+        start_scatter_time = time.time()
         self._comm.Scatter(X, x_local, root=0)
+        end_scatter_time = time.time()
+        elapsed_scatter_time = end_scatter_time - start_scatter_time
+        self.spend_com_time += elapsed_scatter_time
         labels = None
         for i in range(self._max_iter):
             distances = self._calculate_euclidean_distance(centroids, x_local)
@@ -169,11 +178,15 @@ class KMeans(BaseModel):
             centroids = self._update_centroids(x_local, self._n_clusters, labels)
 
             # If file_prefix is provided, create plots at each iteration
-            if self._file_prefix:
+            if self._file_prefix and plot_graph:
                 plot(X, centroids, labels, False, i, self._file_prefix)
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        self.spend_time = elapsed_time
 
         self._centroids = centroids
         self._labels = labels
+
     
     def predict(self, X: np.array) -> np.array:
         return NotImplemented("Not implemented")
