@@ -28,7 +28,6 @@ def generate_gif(path, file_prefix, output_path, output_file, duration):
     list_files_sorted = sort_strings_with_suffix(list_files)
     for file in list_files_sorted:
         if file_prefix in file:
-            print(file)
             image = imageio.v2.imread(os.path.join(path,file)) 
             frames.append(image)
     imageio.mimsave(os.path.join(output_path, output_file),
