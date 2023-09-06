@@ -3,8 +3,8 @@ from kmeans import KMeans
 from mpi4py import MPI
 
 # Load data from CSV file
-DataFile = "data.csv"
-DataSetSize = 5*1000000 #5 million data points
+DataFile = ["data_1.csv","data_2.csv","data_3.csv","data_4.csv"]
+DataSetSize = 1000000
 
 # Define parameters for KMeans
 K = 3 #number of clusters
@@ -19,8 +19,8 @@ size = comm.Get_size()
 kmeans = KMeans(n_clusters=K, max_iter=max_iter, comm=comm, file_prefix="kmeans_plots/kmeans_clustering")
 kmeans.fit(DataFile, DataSetSize, False)
 
-# Generate a GIF animation of the clustering process
-from util import generate_gif
+# # Generate a GIF animation of the clustering process
+# from util import generate_gif
 
 # if rank == 0:
 #     # Define input and output paths and file prefix

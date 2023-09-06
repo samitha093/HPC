@@ -2,7 +2,7 @@ from kmeans import KMeans
 
 # Load data from CSV file
 DataFile = "data.csv"
-DataSetSize = 10*1000000 #10 million data points
+DataSetSize = 5*1000000 #5 million data points
 
 # Define parameters for KMeans
 K = 3 #number of clusters

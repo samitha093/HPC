@@ -99,6 +99,8 @@ class KMeans(BaseModel):
         elapsed_time = end_time - start_time
         print("Reading data from CSV file took %f seconds" % elapsed_time)
 
+        print("Dataset size: ", len(X))
+
         centroids = self._initialize_centroids(self._n_clusters, X)
         labels = None
         for i in range(self._max_iter):
