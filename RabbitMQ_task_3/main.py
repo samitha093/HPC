@@ -2,7 +2,7 @@ import numpy as np
 from kmeans import KMeans
 from mpi4py import MPI
 
-# Load data from CSV file
+# Configurations
 username = 'admin'
 password = 'admin'
 host = '172.28.128.1'
